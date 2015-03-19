@@ -13,6 +13,7 @@ import java.awt.*;
 import java.awt.event.*;
 import java.awt.image.BufferedImage;
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
@@ -28,6 +29,7 @@ import javax.sound.sampled.DataLine;
 import javax.sound.sampled.LineUnavailableException;
 import javax.sound.sampled.UnsupportedAudioFileException;
 import javax.swing.*;
+import javax.swing.plaf.FileChooserUI;
 
 public class BoardT extends JFrame implements ActionListener {
 
@@ -150,7 +152,6 @@ public class BoardT extends JFrame implements ActionListener {
 	private int ggschusszahl[] = new int[anzgegner];
 	private int hilfproofnirvana[] = new int[anzgegner];
 
-
 	private int ggspawnhilf = 0;
 	private int symbolgegnerx[] = new int[anzgegner];
 	private int symbolgegnery[] = new int[anzgegner];
@@ -182,8 +183,9 @@ public class BoardT extends JFrame implements ActionListener {
 	public JButton btn_onevsgegner = new JButton("1 VS GEGNER");
 	public JButton btn_twovsgegner = new JButton("2 VS GEGNER");
 	public JButton btn_onevsone = new JButton("1 VS 1");
+	public JButton btn_choose_map = new JButton("Spielfeld auswählen");
 	public JButton btn_beenden = new JButton("Beenden");
-	private JPanel menu = new JPanel();
+	
 
 	public int mode = 0;
 
@@ -200,13 +202,7 @@ public class BoardT extends JFrame implements ActionListener {
 		super("Panzer Division Wodka");
 		this.add(pnl);
 
-		this.menu.add(this.btn_onevsgegner);
-		this.menu.add(this.btn_twovsgegner);
-		this.menu.add(this.btn_onevsone);
-		this.menu.add(this.btn_beenden);
-
-		this.add(this.menu);
-		this.menu.setLayout(null); // damit die Butten verschoben werden können
+		; // damit die Butten verschoben werden können
 
 		frm_fehler.setVisible(false);
 
@@ -238,8 +234,7 @@ public class BoardT extends JFrame implements ActionListener {
 
 		setFocusable(true);
 		
-			initMap();
-		
+		initMap();
 		
 		initGame(); // fehler
 		setzeItem();
@@ -546,25 +541,25 @@ public class BoardT extends JFrame implements ActionListener {
 
 	public void replay() throws IOException {
 
-		// if (ingame == false){
-		if (replay == true) {
-
-			p2win = false;
-			p1win = false;
-			try {
-				init();
-			} finally {
-
-				// ut.println("Fehler");
-				// frm_fehler.setVisible(true);
+		if (ingame == false){
+			if (replay == true) {
+	
+				p2win = false;
+				p1win = false;
+				try {
+					init();
+				} finally {
+	
+					// ut.println("Fehler");
+					// frm_fehler.setVisible(true);
+				}
+				
+				replay = false;
+	
+				
+				
 			}
-			
-			replay = false;
-
-			
-			
 		}
-		// }
 
 	}
 
@@ -574,11 +569,32 @@ public class BoardT extends JFrame implements ActionListener {
 		repaint();
 
 	}
+	public void chooseMap() 
+	{
+		ArrayList<String> mapnames = new ArrayList<String>();  //TODO
+		
+		
+		
+		
+//		//In response to a button click:
+//		//int returnVal = fc.showOpenDialog(aComponent);
+//	    
+//	        int returnVal = fc.showOpenDialog();
+//
+//	        if (returnVal == JFileChooser.APPROVE_OPTION) {
+//	            File file = fc.getSelectedFile();
+//	            //This is where a real application would open the file.
+//	            log.append("Opening: " + file.getName() + "." + newline);
+//	        } else {
+//	            log.append("Open command cancelled by user." + newline);
+//	        }
+	}
+
 	public void initMap() throws IOException{
 		
-		FileReader fr = new FileReader("map.txt");
+		FileReader fr = new FileReader("-map1.txt");
 		BufferedReader br = new BufferedReader(fr);
-		FileReader cfr = new FileReader("map.txt");
+		FileReader cfr = new FileReader("-map1.txt");
 		BufferedReader cbr = new BufferedReader(cfr);
 		String content = "";
 		int count = 0;
@@ -592,10 +608,7 @@ public class BoardT extends JFrame implements ActionListener {
 			mapstructure = new int[26*26];  
 			String linecontent = br.readLine();
 			content = content + linecontent;
-					
-			
 
-			
 		}
 		String[] splittedcontent = content.split(Pattern.quote(","));
 		
@@ -656,8 +669,7 @@ public class BoardT extends JFrame implements ActionListener {
     			buschbloecke.add(buschblock);
     	
     		}
-    		
-    		
+
     	}
     	map.map_x = 0;
 		map.map_y = 0;
@@ -732,8 +744,10 @@ public class BoardT extends JFrame implements ActionListener {
 	}
 	// paint --> Alles graphische
 	public void paint(Graphics g) {
-		contaktGegnerschuss();
 		
+		System.out.println("PL1: "+ p1win +"| PL2: "+p2win +"| ingame: "+ ingame);
+		
+		contaktGegnerschuss();
 		// bufferedgraphics.clearRect(0, 0, rand+200, rand+statleiste);
 		// bufferedgraphics.setColor(Color.white);
 		bufferedgraphics.fillRect(0, 0, rand + 200, rand + statleiste);
@@ -771,10 +785,13 @@ public class BoardT extends JFrame implements ActionListener {
 
 		bufferedgraphics.drawImage(inforand, rand, statleiste, this);
 		bufferedgraphics.setFont(new Font("Arial Black", Font.PLAIN, 19));
+		if (players.size() >= 1)
+		{	
 		bufferedgraphics.drawString("PL1 |win:" + players.get(0).anzahlwin + "",
 				(rand + 67), 60 + statleiste);
+		}
 
-		if (players.size() == 2) {
+		if (players.size() >= 2) {
 			bufferedgraphics.drawString("PL2 |win:" + players.get(1).anzahlwin + "",
 					(rand + 67), 180 + statleiste);
 		}
@@ -784,39 +801,51 @@ public class BoardT extends JFrame implements ActionListener {
 				+ statleiste - 10);
 		if (onevsone == true) {
 			String str = "";
-			if (p2win) {
+			if (p1win) {
+				str = "PL1 WIN";
+			}
+			else if (p2win) {
 				str = "PL2 WIN";
 			}
-
-			else if (p1win) {
-				str = "PL1 WIN";
-
-			} else {
+			else{
 				str = "";
-
 			}
-
+			
 			bufferedgraphics.setFont(new Font("Arial Black", Font.PLAIN, 24));
 			bufferedgraphics.drawString(str, (rand + 67), 320 + statleiste);
 
 		}
+		String str = "";
+		if (ingame == true) {
+			
+			str = "";
+		}	
+		else{
+			str = "Rückspiel? Taste: 'R'!";
+		}
+			
+			
+			bufferedgraphics.setFont(new Font("Arial Black", Font.PLAIN, 14));
+			bufferedgraphics.drawString(str, (rand + 15), 360 + statleiste);
 
+		
+		
 		// /// Baustelle wegen replay
 
 		// !!!!!!!!!!!
 		
-			for (int i = 0; i < players.get(0).leben; i++) { 
-				bufferedgraphics.drawImage(players.get(0).Picleben, (rand + 67) + i * 40,
-						70 + statleiste, this);
+			if(players.size() >= 1){
+				for (int i = 0; i < players.get(0).leben; i++) { 
+					bufferedgraphics.drawImage(players.get(0).Picleben, (rand + 67) + i * 40,
+							70 + statleiste, this);
+				}
 			}
-			for (int i = 0; i < players.get(1).leben; i++) { 
-				bufferedgraphics.drawImage(players.get(1).Picleben, (rand + 67) + i * 40,
-					190 + statleiste, this);
+			if(players.size() >= 2){
+				for (int i = 0; i < players.get(1).leben; i++) { 
+					bufferedgraphics.drawImage(players.get(1).Picleben, (rand + 67) + i * 40,
+						190 + statleiste, this);
+				}
 			}
-		
-		
-			
-
 		
 		for (int i = 0; i < anzgegner; i++) {
 			bufferedgraphics.drawImage(symbolgegner[i], symbolgegnerx[i],
@@ -1480,7 +1509,7 @@ public class BoardT extends JFrame implements ActionListener {
 		}
 	}
 
-	public void contaktFlussgegner() { //TODO
+	public void contaktFlussgegner() { 
 		for (int j = 0; j < flussbloecke.size(); j++) {
 			for (int i = 0; i < anzgegner; i++) {
 
@@ -1886,24 +1915,25 @@ public class BoardT extends JFrame implements ActionListener {
 
 	public void contaktMitspielerschuss() {
 
-		if (players.size() == 2) {
+		if (players.size() >= 2) {
 
 			if ((players.get(0).schussy <=  players.get(1).getY()+ 50)
 				&& (players.get(0).schussx >= players.get(1).getX() - 4)
 				&& (players.get(0).schussx <= players.get(1).getX() + 50)
 				&& (players.get(0).schussy >= (players.get(1).getY() - 4))) {
-	
-				collisionschuss(0);
-				ingameinitSchuss(0);
-				ingameinitSpieler(1);
-				ingameinitSchuss(1);
-			
 				
-				
-				players.get(1).leben--;
-				if (players.get(1).leben == 0) {
-					players.get(0).anzahlwin++;
+					collisionschuss(0);
+					ingameinitSchuss(0);
+
+				if(ingame){
+					ingameinitSpieler(1);
+					ingameinitSchuss(1);
+					players.get(1).leben--;
+					if (players.get(1).leben == 0) {
+						players.get(0).anzahlwin++;
+					}
 				}
+			
 			} else if ((players.get(1).schussy <= players.get(0).getY()  + 50)
 					&& (players.get(1).schussx >= players.get(0).getX() - 4)
 					&& (players.get(1).schussx <= players.get(0).getX() + 50)
@@ -1912,13 +1942,13 @@ public class BoardT extends JFrame implements ActionListener {
 				collisionschuss(1);
 				ingameinitSchuss(1);
 
-			
-				ingameinitSpieler(0);
-				ingameinitSchuss(0);
-
-				players.get(0).leben--;
-				if (players.get(0).leben == 0) {
-					players.get(1).anzahlwin++;
+				if(ingame){
+					ingameinitSpieler(0);
+					ingameinitSchuss(0);
+					players.get(0).leben--;
+					if (players.get(0).leben == 0) {
+						players.get(1).anzahlwin++;
+					}
 				}
 			}
 
@@ -1976,37 +2006,11 @@ public class BoardT extends JFrame implements ActionListener {
 		// boolean hilf = true;
 
 			for (int j = 0; j < players.size(); j++) {
-
-				if ((players.get(j).schussy <= stuetzpunkte.get(0).getY() + 64)
-						&& (players.get(j).schussx >= stuetzpunkte.get(0).getX() - 4)
-						&& (players.get(j).schussx <= stuetzpunkte.get(0).getX() + 64)
-						&& (players.get(j).schussy >= (stuetzpunkte.get(0).getY() - 4))) {
-					gameover = true;
-					collisionschuss(j);
-					ingameinitSchuss(j);
-
-					// if (hilf == true){
-					if (ingame) {
-
-						if (j == 0) {
-							p2win = true;
-							players.get(1).anzahlwin++;
-						}
-						if (j == 1) {
-							p2win = true;
-							players.get(1).anzahlwin++;
-						}
-					}
-					ingame = false;
-					// }
-					// hilf = false;
-
-					// timer.stop();
-					
-					if ((players.get(j).schussy <= stuetzpunkte.get(1).getY() + 64)
-							&& (players.get(j).schussx >= stuetzpunkte.get(1).getX() - 4)
-							&& (players.get(j).schussx <= stuetzpunkte.get(1).getX() + 64)
-							&& (players.get(j).schussy >= (stuetzpunkte.get(1).getY() - 4))) {
+				if(players.size() >= 1){
+					if ((players.get(j).schussy <= stuetzpunkte.get(0).getY() + 64)
+							&& (players.get(j).schussx >= stuetzpunkte.get(0).getX() - 4)
+							&& (players.get(j).schussx <= stuetzpunkte.get(0).getX() + 64)
+							&& (players.get(j).schussy >= (stuetzpunkte.get(0).getY() - 4))) {
 						gameover = true;
 						collisionschuss(j);
 						ingameinitSchuss(j);
@@ -2015,12 +2019,12 @@ public class BoardT extends JFrame implements ActionListener {
 						if (ingame) {
 
 							if (j == 0) {
-								p1win = true;
-								players.get(0).anzahlwin++;
+								p2win = true;
+								players.get(1).anzahlwin++;
 							}
 							if (j == 1) {
-								p1win = true;
-								players.get(0).anzahlwin++;
+								p2win = true;
+								players.get(1).anzahlwin++;
 							}
 						}
 						ingame = false;
@@ -2028,9 +2032,40 @@ public class BoardT extends JFrame implements ActionListener {
 						// hilf = false;
 
 						// timer.stop();
-					}
-			}
-		}
+					}	
+				}
+				
+				if(players.size() >= 2){
+					if ((players.get(j).schussy <= stuetzpunkte.get(1).getY() + 64)
+							&& (players.get(j).schussx >= stuetzpunkte.get(1).getX() - 4)
+							&& (players.get(j).schussx <= stuetzpunkte.get(1).getX() + 64)
+							&& (players.get(j).schussy >= (stuetzpunkte.get(1).getY() - 4))) 
+						{
+								gameover = true;
+								collisionschuss(j);
+								ingameinitSchuss(j);
+
+								// if (hilf == true){
+								if (ingame) {
+
+									if (j == 0) {
+										p1win = true;
+										players.get(0).anzahlwin++;
+									}
+									if (j == 1) {
+										p1win = true;
+										players.get(0).anzahlwin++;
+									}
+								}
+								ingame = false;
+								// }
+								// hilf = false;
+
+								// timer.stop();
+						}
+				}
+				
+			}		
 			
 	}
 
@@ -2195,7 +2230,7 @@ public class BoardT extends JFrame implements ActionListener {
 
 	}
 
-	public void contakteis() { //TODO
+	public void contakteis() { 
 	
 		for (int j = 0; j < eisbloecke.size(); j++) {
 			for (int i = 0; i < players.size(); i++) {
@@ -2241,7 +2276,7 @@ public class BoardT extends JFrame implements ActionListener {
 
 	}
 
-	public void contaktstahlwand() { //TODO
+	public void contaktstahlwand() { 
 
 		for (int j = 0; j < stahlbloecke.size(); j++) {
 			for (int i = 0; i < players.size(); i++) {
@@ -2371,6 +2406,7 @@ public class BoardT extends JFrame implements ActionListener {
 
 				}
 				
+				
 				if ((players.get(i).getX() <= buschbloecke.get(j).getX() + 32)
 						&& (players.get(i).getX() >= buschbloecke.get(j).getX() - 50)
 						&& (players.get(i).getY() <= buschbloecke.get(j).getY() + 32)
@@ -2401,7 +2437,7 @@ public class BoardT extends JFrame implements ActionListener {
 
 	public void contaktMitspieler() {
 
-		if (players.size() == 2) {
+		if (players.size() >= 2) {
 
 			if ((players.get(0).getX() >= players.get(1).getX() - 50) && (players.get(0).getX() <= players.get(1).getX() + 50)
 					&& (players.get(0).getY() <= players.get(1).getY() + 50)
@@ -2574,32 +2610,33 @@ public class BoardT extends JFrame implements ActionListener {
 
 	public void proofgameover() {
 
-//		if ((players.get(0).leben == 0)) {
-//			p2win = true;
-//			gameover = true;
-//			// timer.stop();
-//			ingame = false;
-//			for (int i = 0; i < players.size(); i++) {
-//				players.get(i).schnell = false;
-//				players.get(i).schiff = false;
-//				players.get(i).hartemun = false;
-//			}
-//
-//		}
-//
-//		if (players.size() == 2) {
-//			if (players.get(1).leben == 0) {
-//				p1win = true;
-//				gameover = true;
-//				// timer.stop();
-//				ingame = false;
-//				for (int i = 0; i < players.size(); i++) {
-//					players.get(i).schnell = false;
-//					players.get(i).schiff = false;
-//					players.get(i).hartemun = false;
-//				}
-//			}
-//		}
+		if (players.size() >= 1) {
+			if ((players.get(0).leben == 0)) {
+				p2win = true;
+				gameover = true;
+				// timer.stop();
+				ingame = false;
+				for (int i = 0; i < players.size(); i++) {
+					players.get(i).schnell = false;
+					players.get(i).schiff = false;
+					players.get(i).hartemun = false;
+				}
+	
+			}
+		}
+		if (players.size() >= 2) {
+			if (players.get(1).leben == 0) {
+				p1win = true;
+				gameover = true;
+				// timer.stop();
+				ingame = false;
+				for (int i = 0; i < players.size(); i++) {
+					players.get(i).schnell = false;
+					players.get(i).schiff = false;
+					players.get(i).hartemun = false;
+				}
+			}
+		}
 
 	}
 
@@ -3061,7 +3098,7 @@ public class BoardT extends JFrame implements ActionListener {
 				try {
 					replay();
 				} catch (IOException e1) {
-					// TODO Auto-generated catch block
+
 					e1.printStackTrace();
 				}
 			}
@@ -3137,10 +3174,13 @@ public class BoardT extends JFrame implements ActionListener {
 				}
 			}
 		}
+	
+		
 
+		
 		// Wenn Taste losgelassen wird stehenbleiben
 		public void keyReleased(KeyEvent e) {
-			int key = e.getKeyCode();
+			int key = e.getKeyCode(); //TODO schleife mit .get(i) == 1 bzw. 2
 
 			
 			if ((key == KeyEvent.VK_RIGHT)) {
@@ -3187,5 +3227,10 @@ public class BoardT extends JFrame implements ActionListener {
 	public static void main(String argv[]) {
 		new BoardT();
 	}
+
+	
+	
+
+	
 
 }
