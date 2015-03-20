@@ -19,6 +19,7 @@ public class MenuT extends JFrame{
 	public JButton onevsgegner=new JButton();  
 	public JButton twovsgegner=new JButton(); 
 	public JButton onevsone=new JButton(); 
+	public JButton choose_map=new JButton(); 
 	public JButton beenden=new JButton(); 
 	ImageIcon iicover=new ImageIcon(this.getClass().getResource("Cover.png"));
 	private JPanel menu=new JPanel();
@@ -84,6 +85,16 @@ public class MenuT extends JFrame{
 				}
    			}
    		};
+   		ActionListener act_choose_map = new ActionListener(){     //ActionListener für Ereignisse
+   	       	
+       		public void actionPerformed( ActionEvent e){
+       			
+       			BoardT BoardVar = new BoardT();
+       			
+
+       			BoardVar.chooseMap();
+   			}
+   		};
    		ActionListener act_beenden = new ActionListener(){     //ActionListener für Ereignisse
    	       	
        		public void actionPerformed( ActionEvent e){
@@ -94,6 +105,7 @@ public class MenuT extends JFrame{
 		this.menu.add(this.onevsgegner);
 		this.menu.add(this.twovsgegner);
 		this.menu.add(this.onevsone);
+		this.menu.add(this.choose_map);
 		this.menu.add(this.beenden);
 		
 		this.add(this.menu);
@@ -117,6 +129,9 @@ public class MenuT extends JFrame{
 	    this.onevsone.setBounds(832/2-290/2,340,290,60);
 	    this.onevsone.addActionListener(act_1vs1);
 	    onevsone.setIcon(new ImageIcon(this.getClass().getResource("3b.png")));
+	    this.choose_map.setBounds(200,200,60,60);
+	    this.choose_map.addActionListener(act_choose_map);
+	    
 	    this.beenden.setBounds(832/2-290/2,410,290,60);
 	    this.beenden.addActionListener(act_beenden);
 	    beenden.setIcon(new ImageIcon(this.getClass().getResource("4b.png")));
