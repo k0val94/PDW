@@ -18,6 +18,7 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.regex.Pattern;
 
@@ -571,11 +572,29 @@ public class BoardT extends JFrame implements ActionListener {
 	}
 	public void chooseMap() 
 	{
-		ArrayList<String> mapnames = new ArrayList<String>();  //TODO
+		System.out.println();
+		ArrayList<String> map_path_list = new ArrayList<String>();  //TODO
+							
+		File path = new File(getJarExecutionDirectory()+"/maps");
 		
-		
-		
-		
+	    File [] maps = path.listFiles();
+	    for (int i = 0; i < maps.length; i++){
+	        if (maps[i].isFile()){ //this line weeds out other directories/folders
+
+	        	map_path_list.add(maps[i].toString());
+	            
+	        }
+	        
+	        
+	    }
+	    
+	    for(int i = 0; i < map_path_list.size(); i++){
+	    	
+	    	//String[] splittedcontent = map_path_list[i].split(Pattern.quote(","));
+	    	
+	    }
+        
+
 //		//In response to a button click:
 //		//int returnVal = fc.showOpenDialog(aComponent);
 //	    
@@ -589,7 +608,28 @@ public class BoardT extends JFrame implements ActionListener {
 //	            log.append("Open command cancelled by user." + newline);
 //	        }
 	}
-
+	
+	//Quelle: http://stackoverflow.com/questions/4917326/how-to-iterate-over-the-files-of-a-certain-directory-in-java
+	//gibt den aktuellenpfad
+	public static String getJarExecutionDirectory()
+	  {
+	    String jarFile = null;
+	    String jarDirectory = null;
+	    int cutFileSeperator = 0;
+	    int cutSemicolon = -1;
+	 
+	    jarFile = System.getProperty("java.class.path");
+	    // Cut seperators
+	    cutFileSeperator = jarFile.lastIndexOf(System.getProperty("file.separator"));
+	    jarDirectory = jarFile.substring(0, cutFileSeperator);
+	    // Cut semicolons
+	    cutSemicolon = jarDirectory.lastIndexOf(';');
+	    jarDirectory = jarDirectory.substring(cutSemicolon+1, jarDirectory.length());
+	 
+	    return jarDirectory+System.getProperty("file.separator");
+	  }
+	 
+	 
 	public void initMap() throws IOException{
 		
 		FileReader fr = new FileReader("-map1.txt");
@@ -745,7 +785,7 @@ public class BoardT extends JFrame implements ActionListener {
 	// paint --> Alles graphische
 	public void paint(Graphics g) {
 		
-		System.out.println("PL1: "+ p1win +"| PL2: "+p2win +"| ingame: "+ ingame);
+		//System.out.println("PL1: "+ p1win +"| PL2: "+p2win +"| ingame: "+ ingame);
 		
 		contaktGegnerschuss();
 		// bufferedgraphics.clearRect(0, 0, rand+200, rand+statleiste);
