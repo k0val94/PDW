@@ -632,9 +632,9 @@ public class BoardT extends JFrame implements ActionListener {
 	 
 	public void initMap() throws IOException{
 		
-		FileReader fr = new FileReader("-map1.txt");
+		FileReader fr = new FileReader("-map.txt");
 		BufferedReader br = new BufferedReader(fr);
-		FileReader cfr = new FileReader("-map1.txt");
+		FileReader cfr = new FileReader("-map.txt");
 		BufferedReader cbr = new BufferedReader(cfr);
 		String content = "";
 		int count = 0;
