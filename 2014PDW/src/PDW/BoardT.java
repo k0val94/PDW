@@ -14,12 +14,10 @@ import java.awt.event.*;
 import java.awt.image.BufferedImage;
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.Map;
+
 import java.util.regex.Pattern;
 
 import javax.sound.sampled.AudioFormat;
@@ -30,7 +28,7 @@ import javax.sound.sampled.DataLine;
 import javax.sound.sampled.LineUnavailableException;
 import javax.sound.sampled.UnsupportedAudioFileException;
 import javax.swing.*;
-import javax.swing.plaf.FileChooserUI;
+
 
 public class BoardT extends JFrame implements ActionListener {
 
@@ -174,7 +172,6 @@ public class BoardT extends JFrame implements ActionListener {
 	ArrayList<HindernissT> flussbloecke = new ArrayList<HindernissT>(); 
 	ArrayList<HindernissT> eisbloecke = new ArrayList<HindernissT>(); 
 	ArrayList<HindernissT> buschbloecke = new ArrayList<HindernissT>(); 
-	
 	ArrayList<StuetzpunktT> stuetzpunkte = new ArrayList<StuetzpunktT>(); 
 	
 
@@ -622,7 +619,6 @@ public class BoardT extends JFrame implements ActionListener {
 	    this.startChoosedMap.setText("Start");
 		this.startChoosedMap.setBounds(rand+30,700,100,60);
 		
-   
 	    startChoosedMap.setVisible(true);
 	    startChoosedMap.setFocusable(false);
 	    startChoosedMap.setEnabled(false); 
@@ -901,16 +897,19 @@ public class BoardT extends JFrame implements ActionListener {
 
 		bufferedgraphics.drawImage(inforand, rand, statleiste, this);
 		bufferedgraphics.setFont(new Font("Arial Black", Font.PLAIN, 19));
-		if (players.size() >= 1)
-		{	
-		bufferedgraphics.drawString("PL1 |win:" + players.get(0).anzahlwin + "",
-				(rand + 67), 60 + statleiste);
-		}
+		if(!choosemap){
+			if (players.size() >= 1)
+			{	
+			bufferedgraphics.drawString("PL1 |win:" + players.get(0).anzahlwin + "",
+					(rand + 67), 60 + statleiste);
+			}
 
-		if (players.size() >= 2) {
-			bufferedgraphics.drawString("PL2 |win:" + players.get(1).anzahlwin + "",
-					(rand + 67), 180 + statleiste);
+			if (players.size() >= 2) {
+				bufferedgraphics.drawString("PL2 |win:" + players.get(1).anzahlwin + "",
+						(rand + 67), 180 + statleiste);
+			}	
 		}
+		
 
 		bufferedgraphics.setFont(new Font("Times New Roman", Font.BOLD, 14));
 		bufferedgraphics.drawString("© Anton Koval", (rand + 90), rand
