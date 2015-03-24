@@ -37,7 +37,10 @@ public class BoardT extends JFrame implements ActionListener {
 	/**
 	 * 
 	 */
-
+	private String choosed_map_name = null;
+	private ArrayList<JButton> map_buttons = new ArrayList<JButton>();
+	public JButton startChoosedMap =new JButton(); 
+	private JPanel board =new JPanel();
 	
 	private static final long serialVersionUID = 1L;
 
@@ -48,7 +51,7 @@ public class BoardT extends JFrame implements ActionListener {
 	
 	ArrayList<PlayerT> players = new ArrayList<PlayerT>();  
 	ArrayList<MapT> maps = new ArrayList<MapT>();  
-	
+	ArrayList<String> map_names = new ArrayList<String>();
 	public boolean onevsone = true;
 	public int hilfanzspieler = 0;
 	public int statleiste = 25;
@@ -62,7 +65,8 @@ public class BoardT extends JFrame implements ActionListener {
 	private int itemzahl = 0;
 	private int zufallrichtug[] = new int[anzgegner];
 	private int hilfzufallrichtug[] = new int[anzgegner];
-	public Timer timer;
+	private int delay = 8;
+	public Timer timer = new Timer(delay, this);
 	// Bilder Tank
 
 	public Image symbolgegner[] = new Image[anzgegner];
@@ -118,6 +122,7 @@ public class BoardT extends JFrame implements ActionListener {
 	
 	public boolean gameover = false;
 	public boolean ingame = false;
+	public boolean choosemap = false;
 	public boolean replay = false;
 	public boolean p1win = false;
 	public boolean p2win = false;
@@ -159,7 +164,7 @@ public class BoardT extends JFrame implements ActionListener {
 
 
 	private int gegnerfeld[] = new int[anzgegner];
-	private int delay = 8;
+	
 	private TAdapter kl = new TAdapter();// KeyListener
 	// Hindernisse
 	
@@ -181,11 +186,7 @@ public class BoardT extends JFrame implements ActionListener {
 
 	public GegnerT[] gegner;
 
-	public JButton btn_onevsgegner = new JButton("1 VS GEGNER");
-	public JButton btn_twovsgegner = new JButton("2 VS GEGNER");
-	public JButton btn_onevsone = new JButton("1 VS 1");
-	public JButton btn_choose_map = new JButton("Spielfeld auswählen");
-	public JButton btn_beenden = new JButton("Beenden");
+
 	
 
 	public int mode = 0;
@@ -207,8 +208,8 @@ public class BoardT extends JFrame implements ActionListener {
 
 		frm_fehler.setVisible(false);
 
-	
-
+		
+  		
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setSize(rand + 200, rand + statleiste);
 		setLocationRelativeTo(null);
@@ -220,10 +221,12 @@ public class BoardT extends JFrame implements ActionListener {
 		// verschiedebe Mods
 		addKeyListener(kl);
 		// Timer
-		timer = new Timer(delay, this);
-		timer.start();
-
-
+		
+		
+		
+			
+			
+		inforand = iiinforand.getImage();
 		offImg = (BufferedImage) createImage(rand + 200, rand + statleiste);
 		bufferedgraphics = offImg.getGraphics();
 
@@ -232,22 +235,25 @@ public class BoardT extends JFrame implements ActionListener {
 	// Initialisierung 1
 
 	public void init() throws IOException {
-
+		ingame = true;
+		try {
+			initMap();
+		} catch (IOException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
 		setFocusable(true);
-		
 		initMap();
-		
 		initGame(); // fehler
 		setzeItem();
 		initGegner();
-		
 		initSpieler();
 		initSchuss();
-		
 		initGegnerSchuss();
 		initGegnerhilfcontakt();
 		//initLeben();
 		this.setFocusable(true);
+		
 	}
 
 	public void soundSchuss() throws UnsupportedAudioFileException,
@@ -405,19 +411,21 @@ public class BoardT extends JFrame implements ActionListener {
 	}
 
 	// Initialisierung 2
-	public void initGame() {
-		ingame = true;
+	public void initGame() //TODO
 	
-		
+	{
+
+//		ingame = true; 
+
 //		for (int i = 0; i < players.size(); i++) {
 //			symbolgegner[i] = iisymbolgegner.getImage();
 //		}
 
 		
 
-		bildgameover = iigameover.getImage();
-		inforand = iiinforand.getImage();
-		picpause = iipause.getImage();
+	//	bildgameover = iigameover.getImage();
+		
+	//	picpause = iipause.getImage();
 
 
 
@@ -433,7 +441,7 @@ public class BoardT extends JFrame implements ActionListener {
 			players.get(i).schnell = false;
 			players.get(i).sek = 0;
 		}
-		// players.size() = menu.players.size();
+	
 
 
 
@@ -444,39 +452,43 @@ public class BoardT extends JFrame implements ActionListener {
 	
 
 	public void setzeItem() {
+		
+		if(ingame){
+			do {
+				itemzahl = (int) (Math.random() * 100);
 
-		do {
-			itemzahl = (int) (Math.random() * 100);
+			} while ((itemzahl != 1) && (itemzahl != 2) && (itemzahl != 3)
+					&& (itemzahl != 4));
 
-		} while ((itemzahl != 1) && (itemzahl != 2) && (itemzahl != 3)
-				&& (itemzahl != 4));
+			Item_hartemun = new ItemT("HarteMun.png", 1);
+			Item_schiff = new ItemT("Schiff.png", 2);
+			Item_schnell = new ItemT("Schnell.png", 3);
+			Item_leben = new ItemT("Item_Leben.png", 4);
+			if (itemzahl == 1) {
 
-		Item_hartemun = new ItemT("HarteMun.png", 1);
-		Item_schiff = new ItemT("Schiff.png", 2);
-		Item_schnell = new ItemT("Schnell.png", 3);
-		Item_leben = new ItemT("Item_Leben.png", 4);
-		if (itemzahl == 1) {
+				Item_hartemun.setzeItem(rand / dotsize + 1, rand / dotsize + 1,
+						itemsize);
+			}
+			if (itemzahl == 2) {
 
-			Item_hartemun.setzeItem(rand / dotsize + 1, rand / dotsize + 1,
-					itemsize);
+				Item_schiff.setzeItem(rand / dotsize + 1, rand / dotsize + 1,
+						itemsize);
+			}
+			if (itemzahl == 3) {
+
+				Item_schnell.setzeItem(rand / dotsize + 1, rand / dotsize + 1,
+						itemsize);
+			}
+			if (itemzahl == 4) {
+
+				Item_leben.setzeItem(rand / dotsize + 1, rand / dotsize + 1,
+						itemsize);
+			}
+
 		}
-		if (itemzahl == 2) {
-
-			Item_schiff.setzeItem(rand / dotsize + 1, rand / dotsize + 1,
-					itemsize);
+			
 		}
-		if (itemzahl == 3) {
-
-			Item_schnell.setzeItem(rand / dotsize + 1, rand / dotsize + 1,
-					itemsize);
-		}
-		if (itemzahl == 4) {
-
-			Item_leben.setzeItem(rand / dotsize + 1, rand / dotsize + 1,
-					itemsize);
-		}
-
-	}
+		
 
 	
 
@@ -530,15 +542,7 @@ public class BoardT extends JFrame implements ActionListener {
 		}
 	}
 
-	
-	ActionListener start = new ActionListener() {
-		public void actionPerformed(ActionEvent e) {
-			// BoardT.this.repaint();
 
-		}
-	};
-
-	
 
 	public void replay() throws IOException {
 
@@ -548,6 +552,7 @@ public class BoardT extends JFrame implements ActionListener {
 				p2win = false;
 				p1win = false;
 				try {
+					
 					init();
 				} finally {
 	
@@ -556,8 +561,6 @@ public class BoardT extends JFrame implements ActionListener {
 				}
 				
 				replay = false;
-	
-				
 				
 			}
 		}
@@ -565,48 +568,150 @@ public class BoardT extends JFrame implements ActionListener {
 	}
 
 	public void actionPerformed(ActionEvent e) {
+		if(ingame){
+			moveschuss();
+			contaktGegnerschuss();
+			prooflevel();
+			proofgegner();
+			spawnGegner();
+			contaktitem(); //contankfluss ist dort.
+			contaktrand();
+			contaktGegner();
+			contaktbusch();
+			contaktziegel();
+			contaktstahlwand();
+			contakteis();
+			contaktMitspielerschuss();
+			moveGegnerschuss();
+			moveGegner();
+			contaktRandgegner();
+			contaktStuetzpunktgegner();
+			contaktStahlwandgegner();
+			contaktFlussgegner();
+			contaktZiegelgegner();
+			contaktSpielergegner();
+			obSchussDesGegner();
+			schussDesGegner();
+			contaktGegnerHindernissschuss();
+			contaktMitspieler();
+			contaktSpielerSchussVonGegner();
+			contaktStuetzpunktschuss();
+			contaktStuetzpunktGegnerschuss();
+			proofgameover();
+		//	proofwin(); timer stoppt bei 0 gegenern
+			contaktStuetzpunkt();
+			spawnitem();
+			schuss();	
+			
+		}
 
-		moveschuss();
+		
 		repaint();
+		
+		 
 
 	}
 	public void chooseMap() 
 	{
-		System.out.println();
-		ArrayList<String> map_path_list = new ArrayList<String>();  //TODO
-							
-		File path = new File(getJarExecutionDirectory()+"/maps");
 		
-	    File [] maps = path.listFiles();
-	    for (int i = 0; i < maps.length; i++){
-	        if (maps[i].isFile()){ //this line weeds out other directories/folders
+		setFocusable(true);
+		
+		ermittleMapName();
+		
+		
+	    this.startChoosedMap.setText("Start");
+		this.startChoosedMap.setBounds(rand+30,700,100,60);
+		
+   
+	    startChoosedMap.setVisible(true);
+	    startChoosedMap.setFocusable(false);
+	    startChoosedMap.setEnabled(false); 
+	    
+	   
 
-	        	map_path_list.add(maps[i].toString());
-	            
-	        }
-	        
-	        
+		ActionListener al_board = new ActionListener(){   //TODO  //ActionListener für Ereignisse
+      		public void actionPerformed( ActionEvent e){
+      			
+      			if(e.getSource() == startChoosedMap){
+      				timer.start();
+          			
+          			try {
+						init();
+					} catch (IOException e1) {
+						// TODO Auto-generated catch block
+						e1.printStackTrace();
+					}
+          		
+          			startChoosedMap.setVisible(false);
+          			choosemap = false;
+      			}
+      		  for(int i = 0; i < map_names.size();i++)
+      		  {
+      			startChoosedMap.setFocusable(true);
+      		    startChoosedMap.setEnabled(true); 
+      		    
+      			if(e.getSource() ==  map_buttons.get(i)){
+      				
+					choosed_map_name = map_names.get(i);
+					try {
+						initMap();
+					} catch (IOException e1) {
+						// TODO Auto-generated catch block
+						e1.printStackTrace();
+					}
+					repaint();
+					
+      			}
+      			  
+      		  }
+   			}
+  		};
+  		
+  		
+	    for(int i = 0; i < map_names.size();i++)
+		{
+	    	
+	    	JButton map_button =new JButton(); 
+	    	map_button.addActionListener(al_board);
+	    	this.board.add(map_button);
+	  
+	  		
+	    	map_button.setText(map_names.get(i)); //!!!
+	    	map_button.setBounds(rand + 20, 30 + 50 * i, 100, 40);
+	    	map_button.setVisible(true);
+	    	map_button.setFocusable(true);
+	    	map_buttons.add(map_button);
+
+		}
+	    
+	    this.startChoosedMap.addActionListener(al_board);
+	    this.board.add(this.startChoosedMap);
+	    this.board.setLayout(null);
+	    this.add(this.board);
+	    
+	}
+
+	private void ermittleMapName() {
+		choosemap = true;
+		String[] map_path_splitted = null;
+		
+		ArrayList<String> map_path_list = new ArrayList<String>();  //TODO
+			
+		File path = new File(getJarExecutionDirectory()+"/maps/1vs1");
+		
+	    File [] maps_path = path.listFiles();
+	    for (int i = 0; i < maps_path.length; i++){
+	        if (maps_path[i].isFile()){ //this line weeds out other directories/folders
+
+	        	map_path_list.add(maps_path[i].toString());
+	        } 
 	    }
 	    
 	    for(int i = 0; i < map_path_list.size(); i++){
 	    	
-	    	//String[] splittedcontent = map_path_list[i].split(Pattern.quote(","));
-	    	
+	    	map_path_splitted = map_path_list.get(i).split(Pattern.quote("\\"));
+	    	 map_names.add((map_path_splitted[map_path_splitted.length-1]));
 	    }
-        
-
-//		//In response to a button click:
-//		//int returnVal = fc.showOpenDialog(aComponent);
-//	    
-//	        int returnVal = fc.showOpenDialog();
-//
-//	        if (returnVal == JFileChooser.APPROVE_OPTION) {
-//	            File file = fc.getSelectedFile();
-//	            //This is where a real application would open the file.
-//	            log.append("Opening: " + file.getName() + "." + newline);
-//	        } else {
-//	            log.append("Open command cancelled by user." + newline);
-//	        }
 	}
 	
 	//Quelle: http://stackoverflow.com/questions/4917326/how-to-iterate-over-the-files-of-a-certain-directory-in-java
@@ -632,9 +737,9 @@ public class BoardT extends JFrame implements ActionListener {
 	 
 	public void initMap() throws IOException{
 		
-		FileReader fr = new FileReader("-map.txt");
+		FileReader fr = new FileReader("maps/1vs1/"+choosed_map_name);
 		BufferedReader br = new BufferedReader(fr);
-		FileReader cfr = new FileReader("-map.txt");
+		FileReader cfr = new FileReader("maps/1vs1/"+choosed_map_name);
 		BufferedReader cbr = new BufferedReader(cfr);
 		String content = "";
 		int count = 0;
@@ -787,41 +892,12 @@ public class BoardT extends JFrame implements ActionListener {
 		
 		//System.out.println("PL1: "+ p1win +"| PL2: "+p2win +"| ingame: "+ ingame);
 		
-		contaktGegnerschuss();
-		// bufferedgraphics.clearRect(0, 0, rand+200, rand+statleiste);
-		// bufferedgraphics.setColor(Color.white);
+		
+		
+		bufferedgraphics.clearRect(0, 0, rand+200, rand+statleiste);
+		bufferedgraphics.setColor(Color.black);
 		bufferedgraphics.fillRect(0, 0, rand + 200, rand + statleiste);
-		prooflevel();
-		proofgegner();
-		spawnGegner();
-		contaktitem(); //contankfluss ist dort.
-		contaktrand();
-		contaktGegner();
-		contaktbusch();
-		contaktziegel();
-		contaktstahlwand();
-		contakteis();
-		contaktMitspielerschuss();
-		moveGegnerschuss();
-		moveGegner();
-		contaktRandgegner();
-		contaktStuetzpunktgegner();
-		contaktStahlwandgegner();
-		contaktFlussgegner();
-		contaktZiegelgegner();
-		contaktSpielergegner();
-		obSchussDesGegner();
-		schussDesGegner();
-		contaktGegnerHindernissschuss();
-		contaktMitspieler();
-		contaktSpielerSchussVonGegner();
-		contaktStuetzpunktschuss();
-		contaktStuetzpunktGegnerschuss();
-		proofgameover();
-	//	proofwin(); timer stoppt bei 0 gegenern
-		contaktStuetzpunkt();
-		spawnitem();
-		schuss();
+		
 
 		bufferedgraphics.drawImage(inforand, rand, statleiste, this);
 		bufferedgraphics.setFont(new Font("Arial Black", Font.PLAIN, 19));
@@ -856,7 +932,7 @@ public class BoardT extends JFrame implements ActionListener {
 
 		}
 		String str = "";
-		if (ingame == true) {
+		if (ingame == true || choosemap == true) {
 			
 			str = "";
 		}	
@@ -1015,12 +1091,14 @@ public class BoardT extends JFrame implements ActionListener {
 			// rand/2-135+statleiste,this);
 
 		}
+		
+		
 
 		g.drawImage(offImg, 0, 0, this);
 
 		Toolkit.getDefaultToolkit().sync();
 		g.dispose();
-
+	
 	}
 
 	public void spawnitem() {
@@ -1036,7 +1114,7 @@ public class BoardT extends JFrame implements ActionListener {
 	public void contaktitem() {
 		for (int j = 0; j < players.size(); j++) {
 
-		
+			
 			contaktHindernissschuss(j);
 			move(j);
 			contaktfluss(j); //ACHTUNG!! MOVE IMMER VONN CONTAKT/COLLISION
@@ -2068,6 +2146,8 @@ public class BoardT extends JFrame implements ActionListener {
 							}
 						}
 						ingame = false;
+						
+						
 						// }
 						// hilf = false;
 
@@ -2098,6 +2178,7 @@ public class BoardT extends JFrame implements ActionListener {
 									}
 								}
 								ingame = false;
+								
 								// }
 								// hilf = false;
 
@@ -2637,15 +2718,15 @@ public class BoardT extends JFrame implements ActionListener {
 	}
 
 	public void proofwin() {
-
-		if ((win == anzgegner) && (onevsone == false)) {
-
-			level++;
-			timer.stop();
-
-			//init();
-
-		}
+//
+//		if ((win == anzgegner) && (onevsone == false)) {
+//
+//			level++;
+//			timer.stop();
+//
+//			//init();
+//
+//		}
 	}
 
 	public void proofgameover() {
@@ -2654,8 +2735,8 @@ public class BoardT extends JFrame implements ActionListener {
 			if ((players.get(0).leben == 0)) {
 				p2win = true;
 				gameover = true;
-				// timer.stop();
 				ingame = false;
+			
 				for (int i = 0; i < players.size(); i++) {
 					players.get(i).schnell = false;
 					players.get(i).schiff = false;
@@ -2668,8 +2749,8 @@ public class BoardT extends JFrame implements ActionListener {
 			if (players.get(1).leben == 0) {
 				p1win = true;
 				gameover = true;
-				// timer.stop();
 				ingame = false;
+				
 				for (int i = 0; i < players.size(); i++) {
 					players.get(i).schnell = false;
 					players.get(i).schiff = false;
